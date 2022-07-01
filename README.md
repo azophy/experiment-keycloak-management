@@ -7,9 +7,24 @@ EXPERIMENT WITH KEYCLOAK MANAGEMENT VIA REST API
 - [ ] adding new users via `partialImport` endpoint
 - [ ] sending reset password link via email
 
+## Requirement
+- docker
+- python > 3.6 with pip installed
+
 ## Usage
-- make sure you computer already have python > 3.6 with pip installed
+### Basic setup
 - clone this repo
 - cd to the folder
 - edit .env.example into .env
+
+### Setup python
 - `pip instal -r requirements.txt`
+
+### Setup keycloak (via docker)
+- `docker compose up`
+- from other terminal: `docker compose exec keycloak sh /app/keycloak-autosetup-script.sh`
+
+## Used libraries
+- faker
+- requests
+- python-dotenv
