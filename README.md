@@ -4,8 +4,10 @@ EXPERIMENT WITH KEYCLOAK MANAGEMENT VIA REST API
 ## Items
 - [x] retrieving admin access token
 - [x] listing & counting users via `/users` endpoint
-- [ ] adding new users via `partialImport` endpoint
-- [ ] sending reset password link via email
+- [x] adding new users via `partialImport` endpoint
+- [x] sending reset password link via email
+- [ ] setting redirect url dari client
+- [ ] setting mapping atribute nik sudah muncul di access token hasil login
 
 ## Requirement
 - docker
@@ -19,6 +21,7 @@ EXPERIMENT WITH KEYCLOAK MANAGEMENT VIA REST API
 
 ### Setup python
 - `pip instal -r requirements.txt`
+- `python main.py`
 
 ### Setup keycloak (via docker)
 - `docker compose up`

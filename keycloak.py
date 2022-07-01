@@ -7,11 +7,15 @@ load_dotenv()
 
 GLOBAL_TOKEN = None
 KEYCLOAK_BASE_URL = os.getenv('KEYCLOAK_BASE_URL')
+KEYCLOAK_ADMIN_USERNAME = os.getenv('KEYCLOAK_ADMIN_USERNAME')
+KEYCLOAK_ADMIN_PASSWORD = os.getenv('KEYCLOAK_ADMIN_PASSWORD')
 KEYCLOAK_REALM = os.getenv('KEYCLOAK_REALM')
 KEYCLOAK_CLIENT_ID = os.getenv('KEYCLOAK_CLIENT_ID'),
 KEYCLOAK_CLIENT_SECRET = os.getenv('KEYCLOAK_CLIENT_SECRET'),
 
 def get_access_token():
+    """
+    # using access acocount
     response = requests.request(
             method = 'POST',
             url = KEYCLOAK_BASE_URL +
@@ -21,6 +25,19 @@ def get_access_token():
                 'grant_type'    : 'client_credentials',
                 'client_id'     : KEYCLOAK_CLIENT_ID,
                 'client_secret' : KEYCLOAK_CLIENT_SECRET,
+            },
+    )
+    """
+    # without access account
+    response = requests.request(
+            method = 'POST',
+            url = KEYCLOAK_BASE_URL +
+                  "/realms/master/protocol/openid-connect/token",
+            data = {
+                'client_id': 'admin-cli',
+                'username': KEYCLOAK_ADMIN_USERNAME,
+                'password': KEYCLOAK_ADMIN_PASSWORD,
+                'grant_type': 'password',
             },
     )
     if not response:
@@ -45,8 +62,10 @@ def send_request(path, method='GET', json_body=[], token=None):
         print(response.content)
         raise Exception(f'response code {response.status_code} from {method}  {url}')
 
-    return response.json()
-    # return response.text
+    if 'json' in response.headers['Content-Type'] :
+        return response.json()
+    else:
+        return response.text
 
 if __name__ == '__main__' :
     from pprint import pprint
@@ -55,9 +74,9 @@ if __name__ == '__main__' :
     print('token:', GLOBAL_TOKEN)
 
     print('before add')
-    # pastikan dulu role di web admin keycloak sudah di atur
+    # kalau pakai auth dengan service account, pastikan dulu role di web admin keycloak sudah di atur
     # di poin 10 di https://www.keycloak.org/docs/latest/server_admin/index.html#_service_accounts tambahkan semua role yg tersedia utk client nya
-    print(send_request(f'/admin/realms/{KEYCLOAK_REALM}/users/count'))
+    print('user count:', send_request(f'/admin/realms/{KEYCLOAK_REALM}/users/count'))
 
     from generate import *
     new_users = [
@@ -65,15 +84,22 @@ if __name__ == '__main__' :
         for _ in range(10)
     ]
 
-    res = send_request(f'/admin/realms/{KEYCLOAK_REALM}/users',
+    res = send_request(f'/admin/realms/{KEYCLOAK_REALM}/partialImport',
         method = 'POST',
-        json_body = new_users,
+        json_body = { 'users': new_users },
     )
 
-    print(res)
-
     print('after add')
-    print(send_request(f'/admin/realms/{KEYCLOAK_REALM}/users/count'))
+    print('user count:', send_request(f'/admin/realms/{KEYCLOAK_REALM}/users/count'))
 
-    # users = send_request(f'/admin/realms/{KEYCLOAK_REALM}/users')
-    # pprint(users)
+    # result from this action is list of all username including its new id. we
+    # could store this new id to trigger sending password reset email later
+    user_id_mapping = {}
+    if res:
+        print(res)
+        for item in res['results'] :
+            user_id_mapping[item['resourceName']] = item['id']
+
+        pprint(user_id_mapping)
+
+

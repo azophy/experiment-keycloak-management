@@ -32,4 +32,13 @@ def generate_dummy_user_payload():
     }
 
 if __name__ == '__main__' :
-    print(generate_dummy_user_payload())
+    # print(generate_dummy_user_payload())
+    new_users = [
+        generate_dummy_user_payload()
+        for _ in range(10)
+    ]
+
+    # from pprint import pprint
+    # pprint(new_users)
+    import json
+    print(json.dumps({ 'users': new_users }))
