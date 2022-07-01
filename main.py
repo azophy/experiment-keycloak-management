@@ -64,6 +64,62 @@ res = keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/clients/{C
 
 """
 print('==============================================')
+print('create new OIDC client with attribute mapper for access token')
+res = keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/clients',
+    method = 'POST',
+    json_body = {
+        'clientId': 'test_client_4',
+        'name': 'test_client',
+        'access': {
+            'view': True,
+            'configure': True,
+            'manage': True
+        },
+        'enabled': True,
+
+        'protocol': 'openid-connect',
+        'publicClient': True,
+        'directAccessGrantsEnabled': False,
+        'standardFlowEnabled': True,
+        'implicitFlowEnabled': False,
+        'fullScopeAllowed': True,
+        'defaultClientScopes': [
+            'web-origins',
+            'role_list',
+            'profile',
+            'roles',
+            'email'
+        ],
+
+        'baseUrl': keycloak.KEYCLOAK_BASE_URL,
+        'redirectUris': [
+            '*'
+        ],
+
+        # add NIK attribute to map in access token
+        'protocolMappers': [
+            {
+                'protocol':'openid-connect',
+                'config':{
+                    'id.token.claim':'true',
+                    'access.token.claim':'true',
+                    'userinfo.token.claim':'true',
+                    'multivalued':'',
+                    'aggregate.attrs':'',
+                    'user.attribute':'nik',
+                    'claim.name':'nik',
+                    'jsonType.label':'String'
+                },
+                'name':'nik',
+                'protocolMapper':'oidc-usermodel-attribute-mapper',
+            },
+        ],
+    },
+)
+if res:
+    print('success:', res)
+
+print('==============================================')
 print('create new client with service account permission')
 res = keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/clients',
     method = 'POST',

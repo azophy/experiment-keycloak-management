@@ -6,8 +6,8 @@ EXPERIMENT WITH KEYCLOAK MANAGEMENT VIA REST API
 - [x] listing & counting users via `/users` endpoint
 - [x] adding new users via `partialImport` endpoint
 - [x] sending reset password link via email
-- [ ] setting redirect url dari client
-- [ ] setting mapping atribute nik sudah muncul di access token hasil login
+- [x] setting redirect url dari client
+- [x] setting mapping atribute nik sudah muncul di access token hasil login
 
 ## Requirement
 - docker
