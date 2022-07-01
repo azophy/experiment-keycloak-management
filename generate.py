@@ -29,6 +29,15 @@ def generate_dummy_user_payload():
       'enabled':True,
       'totp':False,
       'emailVerified':True,
+
+      # optional: creating password when creating user
+      'credentials': [
+          {
+            'type': 'password',
+            'value': 'test',
+            'temporary': False,
+          }
+      ],
     }
 
 if __name__ == '__main__' :

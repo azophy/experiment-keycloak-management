@@ -36,10 +36,68 @@ if res:
 
 print('sending reset password email for 1 user')
 example_user_id = list(user_id_mapping.values())[0]
-res = keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/users/{example_user_id}/execute-actions-email?lifespan=3600',
+try:
+    res = keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/users/{example_user_id}/execute-actions-email?lifespan=3600',
+        method = 'PUT',
+        json_body = [ 'UPDATE_PASSWORD' ],
+    )
+except Exception as e:
+    print('encounter error:', e)
+else:
+    print(res)
+
+print('==============================================')
+print('get resourceId of our client')
+res = keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/clients?clientId={keycloak.KEYCLOAK_CLIENT_ID}')
+CLIENT_RESOURCE_ID=res[0]['id']
+print('==============================================')
+print('setting up redirect url for our existing client')
+res = keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/clients/{CLIENT_RESOURCE_ID}',
     method = 'PUT',
-    json_body = [ 'UPDATE_PASSWORD' ],
+    json_body = {
+        'baseUrl': keycloak.KEYCLOAK_BASE_URL,
+        'redirectUris': [
+            '*'
+        ],
+    },
 )
 
-print(res)
+"""
+print('==============================================')
+print('create new client with service account permission')
+res = keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/clients',
+    method = 'POST',
+    json_body = {
+        'clientId': 'backend_server3',
+        'name': 'backend_server',
+        'access': {
+            'view': True,
+            'configure': True,
+            'manage': True
+        },
+        'enabled': True,
 
+        'protocol': 'openid-connect',
+        'publicClient': False,
+        'serviceAccountsEnabled': True,
+        'directAccessGrantsEnabled': False,
+        'standardFlowEnabled': False,
+        'implicitFlowEnabled': False,
+        'fullScopeAllowed': True,
+        'defaultClientScopes': [
+            'web-origins',
+            'role_list',
+            'profile',
+            'roles',
+            'email'
+        ],
+
+        'baseUrl': keycloak.KEYCLOAK_BASE_URL,
+        'redirectUris': [
+            '*'
+        ],
+    },
+)
+if res:
+    print('success:', res)
+"""
