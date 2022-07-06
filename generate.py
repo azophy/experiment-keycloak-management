@@ -3,12 +3,12 @@ from faker import Faker
 
 fake = Faker()
 
-def generate_dummy_user_payload():
+def generate_dummy_user_payload(username_prefix=''):
     profile = fake.profile()
 
     return {
       'id': str(uuid.uuid1()),
-      'username' : profile['username'],
+      'username' : username_prefix + profile['username'],
       'firstName': profile['name'].split()[0],
       'lastName' : profile['name'].split()[1],
       'email'    : profile['mail'],
