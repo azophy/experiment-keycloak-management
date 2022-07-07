@@ -4,16 +4,16 @@ from faker import Faker
 fake = Faker()
 
 def generate_dummy_user_payload(username_prefix=''):
-    profile = fake.profile()
+    # profile = fake.unique.profile()
 
     return {
       'id': str(uuid.uuid1()),
-      'username' : username_prefix + profile['username'],
-      'firstName': profile['name'].split()[0],
-      'lastName' : profile['name'].split()[1],
-      'email'    : profile['mail'],
+      'username' : username_prefix + fake.unique.user_name(),
+      'firstName': fake.unique.first_name(),
+      'lastName' : fake.unique.last_name(),
+      'email'    : fake.unique.email(),
       'attributes':{
-        'nik':[ fake.numerify('#'*16) ]
+        'nik':[ fake.unique.numerify('#'*16) ]
       },
       # 'access':{
         # 'manageGroupMembership':true,
@@ -39,6 +39,14 @@ def generate_dummy_user_payload(username_prefix=''):
           }
       ],
     }
+
+def generate_multiple_dummy_user_payload(num, username_prefix=''):
+    fake.unique.clear()
+
+    return [
+        generate_dummy_user_payload(username_prefix)
+        for i in range(num)
+    ]
 
 if __name__ == '__main__' :
     # print(generate_dummy_user_payload())
