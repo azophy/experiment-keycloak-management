@@ -3,12 +3,13 @@ from faker import Faker
 
 fake = Faker()
 
-def generate_dummy_user_payload(username_prefix=''):
+# def generate_dummy_user_payload(username_prefix=''):
+def generate_dummy_user_payload(username):
     # profile = fake.unique.profile()
 
     return {
       'id': str(uuid.uuid1()),
-      'username' : username_prefix + fake.unique.user_name(),
+      'username' : username,
       'firstName': fake.unique.first_name(),
       'lastName' : fake.unique.last_name(),
       'email'    : fake.unique.email(),
@@ -44,7 +45,7 @@ def generate_multiple_dummy_user_payload(num, username_prefix=''):
     fake.unique.clear()
 
     return [
-        generate_dummy_user_payload(username_prefix)
+        generate_dummy_user_payload(username_prefix + '-' + str(i))
         for i in range(num)
     ]
 

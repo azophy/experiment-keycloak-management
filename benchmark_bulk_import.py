@@ -13,6 +13,7 @@ print('token:', keycloak.GLOBAL_TOKEN)
 
 def execute_benchmark(additional_prefix=''):
     before_count=keycloak.send_request(f'/admin/realms/{keycloak.KEYCLOAK_REALM}/users/count')
+    print('before_count:', before_count)
 
     username_prefix = str(datetime.now().timestamp()).replace('.', '') + additional_prefix
     print('username_prefix:', username_prefix)
@@ -24,7 +25,7 @@ def execute_benchmark(additional_prefix=''):
     new_usernames = [ item['username'] for item in new_users ]
     if (len(new_usernames) != len(set(new_usernames))):
         print('found duplicates')
-    print('usernames:', new_usernames)
+    # print('usernames:', new_usernames)
 
     before_time = datetime.now()
     try:
